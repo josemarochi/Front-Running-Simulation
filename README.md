@@ -55,10 +55,12 @@ sudo kurtosis run github.com/ethpandaops/ethereum-package \
 ```bash
 docker ps | grep el-1-geth-lighthouse
 
-docker cp prefunded.txt <CONTAINER_ID>:/prefunded.txt
+docker cp prefundedaccount.txt <CONTAINER_ID>:/prefunded1.txt
+docker cp prefundedaccount2.txt <CONTAINER_ID>:/prefunded2.txt
 
 docker exec -it <CONTAINER_ID> sh
-geth account import /prefunded.txt
+geth account import /prefunded1.txt
+geth account import /prefunded2.txt
 cp /root/.ethereum/keystore/UTC--... /data/geth/execution-data/keystore
 ```
 
@@ -72,8 +74,8 @@ eth.accounts
 5. **Configure **``** and **``**:**
 
 ```env
-PRIVATE_KEY=<attacker key>
-PRIVATE_KEY2=<victim key>
+PRIVATE_KEY=<attacker key> #Prefunded accounts for kurtosis on /prefundedAccounts there you will find 2 private keys
+PRIVATE_KEY2=<victim key>  #Prefunded accounts for kurtosis on /prefundedAccounts there you will find 2 private keys
 RPC_URL=http://127.0.0.1:<URL> #This URL will be shown on kurtosis deployment. Example: http://127.0.0.1:3343 -> 8545/rcp, there u will take 3343
 DEX_ADDRESS=0x... # To be filled after deployment only in scenario 1 when SimpleDex is deployed.
 ```
@@ -123,29 +125,24 @@ npx hardhat compile
 2. **Deploy the DEX contract:**
 
 ```bash
-npx hardhat run scripts/deploy.js --network localhost
+npx hardhat run scripts/deploySimpleDEX.js --network localhost
 ```
 
 3. **Update **``** with DEX address**
 
-4. **Deploy the Monitor contract:**
+
+4. **Run the attacker bot:**
 
 ```bash
-npx hardhat run scripts/deploy-monitor.js --network localhost
+npx hardhat run scripts/attack-bot.js --network localhost
 ```
 
-5. **Run the attacker bot:**
-
-```bash
-node scripts/attack-bot.js --network localhost
-```
-
-6. **Run the victim transaction:**
+5. **Run the victim transaction:**
 
 ```bash
 npx hardhat run scripts/victim-buy.js --network localhost
 ```
-
+There you can check on the console log all the information about the attack.
 ---
 
 ## 🧪 Scenario 2: Uniswap Replica
@@ -163,7 +160,7 @@ This scenario increases realism by replicating a full Uniswap DEX locally and te
 │   ├── UniswapV2All2.sol
 │   ├── WETH9.sol
 ├── scripts/
-│   ├── DEPLOY.js
+│   ├── deploy.js
 │   ├── sandwich-bot.js
 │   ├── swap-victim.js
 ├── package-lock.json
@@ -183,19 +180,19 @@ npx hardhat compile
 2. **Deploy Uniswap contracts and add liquidity to the pool:**
 
 ```bash
-npx hardhat run scripts/DEPLOY.js --network localhost
+npx hardhat run scripts/deploy.js --network localhost
 ```
 
 3. **Run the sandwich bot:**
 
 ```bash
-node scripts/sandwich-bot.js --network localhost
+npx hardhat run scripts/sandwich-bot.js --network localhost
 ```
 
 4. **Execute the victim transaction (separately):**
 
 ```bash
-node scripts/swap-victim.js --network localhost
+npx hardhat run scripts/swap-victim.js --network localhost
 ```
 
 5. **Review the results manually in logs or via contract state.**
