@@ -1,10 +1,10 @@
-Awareness of Front Running Attacks in Blockchain Environments
+# Awareness of Front Running Attacks in Blockchain Environments
 
 This repository replicates the undergraduate thesis "Concienciación de Ataques Front Running en Entornos Blockchain". It implements a Red Team-style bot capable of simulating sandwich attacks both in a fully controlled environment and in a local replica of Uniswap, using tools such as Kurtosis, Geth, Hardhat, and Web3.
 
 The goal is to understand the offensive logic of MEV (Maximal Extractable Value) attacks and to provide a reproducible educational environment to raise awareness and support future research.
 
-🚀 Getting Started: Local Environment Setup
+## 🚀 Getting Started: Local Environment Setup
 
 This guide will help you replicate the local blockchain test environment used in the project.
 
@@ -91,7 +91,7 @@ You can also run custom scripts (like attack simulations) via:
 
 npx hardhat run scripts/your-script.js --network localhost
 
-📂 Project Structure
+## 📂 Project Structure
 
 /contracts: Smart contracts used for simulating DEX and attack logic
 
@@ -101,7 +101,7 @@ npx hardhat run scripts/your-script.js --network localhost
 
 .env: Store private keys and RPC details securely (not committed)
 
-🔧 Built With
+## 🔧 Built With
 
 Kurtosis - Test environment orchestrator
 
@@ -115,7 +115,7 @@ Web3.py / ethers.js - Interaction libraries
 
 
 
-🌐 Acknowledgements
+## 🌐 Acknowledgements
 
 Based on the undergraduate thesis by José Manuel Rodríguez Chicano, Universidad de Málaga, 2025.
 
