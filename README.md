@@ -4,13 +4,18 @@ This repository replicates the Final Degree Project (TFG) titled "Concienciació
 
 ## 📚 Table of Contents
 
-- [Overview](#-overview)
-- [Technologies Used](#-technologies-used)
-- [Environment Setup](#-environment-setup)
-- [Scenario 1: Fictitious DEX](#-scenario-1-fictitious-dex)
-- [Scenario 2: Uniswap Replica](#-scenario-2-uniswap-replica)
-- [Legal & Ethical Considerations](#-legal--ethical-considerations)
-- [Acknowledgements](#-acknowledgements)
+- 📌 [Overview](#overview)
+- 🚀 [Technologies Used](#technologies-used)
+- ⚙️ [Environment Setup](#environment-setup)
+  - 🖥️ [Virtual Machine](#virtual-machine)
+  - 🐳 [Docker](#docker)
+  - 🟦 [NodeJS and NPM](#nodejs-and-npm)
+  - ⚙️ [Kurtosis](#kurtosis)
+  - 🔧 [Hardhat](#hardhat)
+- 🧪 [Scenario 1: Fictitious DEX](#scenario-1-fictitious-dex)
+- 🧪 [Scenario 2: Uniswap Replica](#scenario-2-uniswap-replica)
+- ⚖️ [Legal and Ethical Considerations](#legal-and-ethical-considerations)
+- 🙏 [Acknowledgements](#acknowledgements)
 
 ---
 
@@ -25,7 +30,7 @@ Two scenarios are implemented:
 
 ## 🛠️ Technologies Used
 
-- Ethereum (Geth) & Mempool analysis
+- Ethereum (Geth) & mempool analysis
 - [Hardhat](https://hardhat.org/) for smart contract deployment
 - [Kurtosis](https://docs.kurtosis.com/) for private network setup
 - [Blockscout](https://blockscout.com/) for blockchain exploration
@@ -36,62 +41,77 @@ Two scenarios are implemented:
 
 ## ⚙️ Environment Setup
 
-1. **Start the local Ethereum environment with Kurtosis:**
+Follow these steps to prepare your environment.
+
+### Virtual Machine
+
+All commands were tested on an Ubuntu 22.04.1 virtual machine with superuser privileges, using Oracle VirtualBox. You can also run these on a native Ubuntu installation or other Linux distributions with minimal changes.
+
+### Docker
+
+Docker is required to run Geth and other services in containers.
+
+Install Docker:
 
 ```bash
-kurtosis engine start
-sudo kurtosis run github.com/ethpandaops/ethereum-package \
-  --args-file ./network_params.yaml \
-  --image-download always
+sudo apt update && sudo apt install -y docker.io
 ```
 
-2. **Access tools:**
-
-   - Blockscout: visualize transactions
-   - Dora/Assertor: beacon chain status
-
-3. **Import prefunded accounts:**
+Verify installation:
 
 ```bash
-docker ps | grep el-1-geth-lighthouse
-
-docker cp prefundedaccount.txt <CONTAINER_ID>:/prefunded1.txt
-docker cp prefundedaccount2.txt <CONTAINER_ID>:/prefunded2.txt
-
-docker exec -it <CONTAINER_ID> sh
-geth account import /prefunded1.txt
-geth account import /prefunded2.txt
-cp /root/.ethereum/keystore/UTC--... /data/geth/execution-data/keystore
+docker --version
+# Expected output: Docker version 26.1.3, build 26.1.3-0ubuntu1~22.04.1
 ```
 
-4. **Verify accounts:**
+### NodeJS and NPM
+
+Node.js is a JavaScript runtime and NPM is its package manager.
+
+Install Node.js 20.x and NPM:
 
 ```bash
-geth attach http://127.0.0.1:8545
-eth.accounts
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
 ```
 
-5. **Configure **``** and **``**:**
-
-```env
-PRIVATE_KEY=<attacker key> #Prefunded accounts for kurtosis on /prefundedAccounts there you will find 2 private keys
-PRIVATE_KEY2=<victim key>  #Prefunded accounts for kurtosis on /prefundedAccounts there you will find 2 private keys
-RPC_URL=http://127.0.0.1:<URL> #This URL will be shown on kurtosis deployment. Example: http://127.0.0.1:3343 -> 8545/rcp, there u will take 3343
-DEX_ADDRESS=0x... # To be filled after deployment only in scenario 1 when SimpleDex is deployed.
-```
-
-`hardhat.confing.js` is different for each scenario.
-
-6. **Install dependencies:**
+Verify installation:
 
 ```bash
+node --version   # e.g. v20.19.0
+npm --version    # e.g. 10.8.2
+```
+
+### Kurtosis
+
+Kurtosis orchestrates your private Ethereum test network.
+
+Install Kurtosis CLI:
+
+```bash
+echo "deb [trusted=yes] https://apt.fury.io/kurtosis-tech/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
+sudo apt update
+sudo apt install kurtosis-cli
+```
+
+### Hardhat
+
+Hardhat is used to compile, test, and deploy smart contracts.
+
+Initialize a new Node.js project and install dependencies:
+
+```bash
+mkdir TFG-project && cd TFG-project
+npm init -y
 npm install --save-dev hardhat@^2.22.19 \
   @nomicfoundation/hardhat-ethers@^3.0.8 ethers@^6.13.5 \
   @openzeppelin/contracts@^5.2.0 \
   @uniswap/v2-core@^1.0.1 \
   @uniswap/v2-periphery@^1.1.0-beta.0 \
   dotenv@^16.4.7
+npx hardhat  # choose "Create an empty hardhat.config.js"
 ```
+
 ---
 
 ## 🧪 Scenario 1: Fictitious DEX
@@ -108,7 +128,6 @@ This scenario simulates a sandwich attack in a minimal custom DEX to focus on of
 │   ├── attack-bot.js
 │   ├── deploySimpleDEX.js
 │   ├── victim-buy.js
-├── package-lock.json
 ├── package.json
 ├── .env
 └── hardhat.config.js
@@ -116,33 +135,28 @@ This scenario simulates a sandwich attack in a minimal custom DEX to focus on of
 
 ### Step-by-Step Guide
 
-1. **Compile contracts:**
+1. **Compile contracts**:
+   ```bash
+   npx hardhat compile
+   ```
+2. **Deploy the DEX contract**:
+   ```bash
+   npx hardhat run scripts/deploySimpleDEX.js --network localhost
+   ```
+3. **Update **`` with the deployed DEX address:
+   ```env
+   DEX_ADDRESS=0x...  # address from deploy output
+   ```
+4. **Run the attacker bot**:
+   ```bash
+   npx hardhat run scripts/attack-bot.js --network localhost
+   ```
+5. **Run the victim transaction**:
+   ```bash
+   npx hardhat run scripts/victim-buy.js --network localhost
+   ```
+6. **Check console logs** for attack details (profit, tx hash).
 
-```bash
-npx hardhat compile
-```
-
-2. **Deploy the DEX contract:**
-
-```bash
-npx hardhat run scripts/deploySimpleDEX.js --network localhost
-```
-
-3. **Update **``** with DEX address**
-
-
-4. **Run the attacker bot:**
-
-```bash
-npx hardhat run scripts/attack-bot.js --network localhost
-```
-
-5. **Run the victim transaction:**
-
-```bash
-npx hardhat run scripts/victim-buy.js --network localhost
-```
-There you can check on the console log all the information about the attack.
 ---
 
 ## 🧪 Scenario 2: Uniswap Replica
@@ -163,7 +177,6 @@ This scenario increases realism by replicating a full Uniswap DEX locally and te
 │   ├── deploy.js
 │   ├── sandwich-bot.js
 │   ├── swap-victim.js
-├── package-lock.json
 ├── package.json
 ├── .env
 └── hardhat.config.js
@@ -171,39 +184,29 @@ This scenario increases realism by replicating a full Uniswap DEX locally and te
 
 ### Step-by-Step Guide
 
-1. **Compile contracts:**
-
-```bash
-npx hardhat compile
-```
-
-2. **Deploy Uniswap contracts and add liquidity to the pool:**
-
-```bash
-npx hardhat run scripts/deploy.js --network localhost
-```
-
-3. **Run the sandwich bot:**
-
-```bash
-npx hardhat run scripts/sandwich-bot.js --network localhost
-```
-
-4. **Execute the victim transaction (separately):**
-
-```bash
-npx hardhat run scripts/swap-victim.js --network localhost
-```
-
-5. **Review the results manually in logs or via contract state.**
+1. **Compile contracts**:
+   ```bash
+   npx hardhat compile
+   ```
+2. **Deploy Uniswap contracts and add liquidity** (single script):
+   ```bash
+   npx hardhat run scripts/deploy.js --network localhost
+   ```
+3. **Run the sandwich bot**:
+   ```bash
+   npx hardhat run scripts/sandwich-bot.js --network localhost
+   ```
+4. **Execute the victim transaction**:
+   ```bash
+   npx hardhat run scripts/swap-victim.js --network localhost
+   ```
+5. **Review logs** or inspect contract state via Remix/Blockscout.
 
 ---
 
-## ⚖️ Legal & Ethical Considerations
+## ⚖️ Legal and Ethical Considerations
 
-This project uses an offensive security (Red Team) approach for educational and research purposes only.
-
-Simulating MEV and front-running attacks in controlled environments helps developers and researchers understand vulnerabilities and build more secure systems. **Do not deploy or use these bots on public networks.**
+This project uses an offensive security (Red Team) approach for educational and research purposes only. Simulating MEV and front-running attacks in controlled environments helps developers and researchers understand vulnerabilities and build more secure systems. **Do not deploy or use these bots on public networks.**
 
 ---
 
@@ -211,8 +214,6 @@ Simulating MEV and front-running attacks in controlled environments helps develo
 
 This project is based on the TFG of **José Manuel Rodríguez Chicano** (Universidad de Málaga, 2025) under the supervision of **Isaac Agudo Ruiz**.
 
-> "El objetivo principal ha consistido en conocer la lógica ofensiva que hay detrás de estos tipos de ataques para concienciar y mejorar las defensas del ecosistema DeFi."
-
----
+> "El objetivo principal ha consisto en conocer la lógica ofensiva que hay detrás de estos tipos de ataques para concienciar y mejorar las defensas del ecosistema DeFi."
 
 
