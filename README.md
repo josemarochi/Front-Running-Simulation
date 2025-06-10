@@ -5,16 +5,16 @@ This repository replicates the Final Degree Project (TFG) titled "Concienciació
 ## 📚 Table of Contents
 
 - [Overview](#-overview)
-- [Technologies Used](#technologies-used)
-- [Environment Setup](#-environment-setup)
-  - [Virtual Machine](#virtual-machine)
+- [Technologies Used](#%EF%B8%8F-technologies-used)
+- [Environment Setup](#%EF%B8%8F-technologies-used)
+  - [Virtual Machine](#%EF%B8%8F-technologies-used)
   - [Docker](#-docker)
   - [NodeJS and NPM](#-nodejs-and-npm)
-  - [Kurtosis](#-kurtosis)
+  - [Kurtosis](#%EF%B8%8F-kurtosis)
   - [Hardhat](#-hardhat)
 - [Scenario 1: Fictitious DEX](#-scenario-1-fictitious-dex)
 - [Scenario 2: Uniswap Replica](#-scenario-2-uniswap-replica)
-- [Legal and Ethical Considerations](#-legal-and-ethical-considerations)
+- [Legal and Ethical Considerations](#%EF%B8%8F-legal-and-ethical-considerations)
 - [Acknowledgements](#-acknowledgements)
 
 ---
