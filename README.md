@@ -10,10 +10,13 @@ This guide will help you replicate the local blockchain test environment used in
 
 1. Start the Kurtosis Engine and Ethereum Network
 
+<pre>```bash  
 kurtosis engine start
 sudo kurtosis run github.com/ethpandaops/ethereum-package \
   --args-file ./network_params.yaml \
   --image-download always
+```
+</pre>
 
 2. Access Management Tools
 
