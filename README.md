@@ -5,9 +5,9 @@ This repository replicates the Final Degree Project (TFG) titled "Concienciació
 ## 📚 Table of Contents
 
 - [Overview](#-overview)
-- [Technologies Used](#-technologies-used)
+- [Technologies Used](#technologies-used)
 - [Environment Setup](#-environment-setup)
-  - [Virtual Machine](#-virtual-machine)
+  - [Virtual Machine](#virtual-machine)
   - [Docker](#-docker)
   - [NodeJS and NPM](#-nodejs-and-npm)
   - [Kurtosis](#-kurtosis)
