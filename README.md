@@ -10,13 +10,12 @@ This guide will help you replicate the local blockchain test environment used in
 
 1. Start the Kurtosis Engine and Ethereum Network
 
-<pre>```bash  
+```bash
 kurtosis engine start
 sudo kurtosis run github.com/ethpandaops/ethereum-package \
   --args-file ./network_params.yaml \
   --image-download always
 ```
-</pre>
 
 2. Access Management Tools
 
@@ -31,28 +30,35 @@ These will be accessible via a local URL printed by Kurtosis after setup.
 3. Import Prefunded Accounts
 
 Get the container ID of the execution layer (Geth node):
-
+```bash
 docker ps | grep el-1-geth-lighthouse
-
+```
 Copy your prefunded account file into the container:
-
+```bash
 docker cp prefunded.txt <CONTAINER_ID>:/prefunded.txt
-
+```
 Access the container and import the accounts:
 
+```bash
 docker exec -it <CONTAINER_ID> sh
 geth account import /prefunded.txt
-
+```
+  
 Move the account keystore to the expected location:
+  
+```bash
 
 cp /root/.ethereum/keystore/UTC--... /data/geth/execution-data/keystore
+```
 
 4. Verify Accounts Are Loaded
 
 Start Geth’s interactive console and confirm the accounts:
-
+  
+```bash
 geth attach http://127.0.0.1:8545
 eth.accounts
+```
 
 5. Configure Hardhat & MetaMask
 
@@ -62,12 +68,14 @@ In MetaMask, connect to the same local RPC and import the prefunded private key(
 
 Example Hardhat config:
 
+```bash  
 networks: {
   localhost: {
     url: "http://<HOST_IP>:8545",
     accounts: [process.env.PRIVATE_KEY, process.env.PRIVATE_KEY2],
   },
 },
+```
 
 6. Deploy & Test Contracts
 
