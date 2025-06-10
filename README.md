@@ -1,14 +1,42 @@
 # Awareness of Front Running Attacks in Blockchain Environments
 
-This repository replicates the undergraduate thesis "Concienciación de Ataques Front Running en Entornos Blockchain". It implements a Red Team-style bot capable of simulating sandwich attacks both in a fully controlled environment and in a local replica of Uniswap, using tools such as Kurtosis, Geth, Hardhat, and Web3.
+This repository replicates the Final Degree Project (TFG) titled "Concienciación de Ataques Front Running en Entornos Blockchain" from Universidad de Málaga. It provides a reproducible environment and detailed steps to simulate sandwich attacks in two scenarios: a fictitious DEX and a local replica of Uniswap. This repository is intended for educational and research purposes only.
 
-The goal is to understand the offensive logic of MEV (Maximal Extractable Value) attacks and to provide a reproducible educational environment to raise awareness and support future research.
+## 📚 Table of Contents
 
-## 🚀 Getting Started: Local Environment Setup
+- [Overview](#overview)
+- [Technologies Used](#technologies-used)
+- [Environment Setup](#environment-setup)
+- [Scenario 1: Fictitious DEX](#scenario-1-fictitious-dex)
+- [Scenario 2: Uniswap Replica](#scenario-2-uniswap-replica)
+- [Legal & Ethical Considerations](#legal--ethical-considerations)
+- [Acknowledgements](#acknowledgements)
 
-This guide will help you replicate the local blockchain test environment used in the project.
+---
 
-1. Start the Kurtosis Engine and Ethereum Network
+## 📌 Overview
+
+This project aims to raise awareness of front-running attacks in blockchain, particularly in DeFi environments. The work focuses on sandwich attacks, a type of MEV (Maximal Extractable Value), simulating them through a bot implemented in a private Ethereum network.
+
+Two scenarios are implemented:
+
+1. **Scenario 1**: A fully controlled environment using a fictitious DEX smart contract.
+2. **Scenario 2**: A more realistic simulation using a local deployment of Uniswap.
+
+## 🛠️ Technologies Used
+
+- Ethereum (Geth) & Mempool analysis
+- [Hardhat](https://hardhat.org/) for smart contract deployment
+- [Kurtosis](https://docs.kurtosis.com/) for private network setup
+- [Blockscout](https://blockscout.com/) for blockchain exploration
+- [Remix IDE](https://remix.ethereum.org/) for contract interaction
+- Solidity, JavaScript, ethers.js
+
+---
+
+## ⚙️ Environment Setup
+
+1. **Start the local Ethereum environment with Kurtosis:**
 
 ```bash
 kurtosis engine start
@@ -17,106 +45,177 @@ sudo kurtosis run github.com/ethpandaops/ethereum-package \
   --image-download always
 ```
 
-2. Access Management Tools
+2. **Access tools:**
 
-Once the network is running:
+   - Blockscout: visualize transactions
+   - Dora/Assertor: beacon chain status
 
-Use Blockscout (EVM block explorer) to inspect deployed contracts and transactions.
+3. **Import prefunded accounts:**
 
-Use Assertor/Dora (beacon chain explorer) for consensus-level data.
-
-These will be accessible via a local URL printed by Kurtosis after setup.
-
-3. Import Prefunded Accounts
-
-Get the container ID of the execution layer (Geth node):
 ```bash
 docker ps | grep el-1-geth-lighthouse
-```
-Copy your prefunded account file into the container:
-```bash
-docker cp prefunded.txt <CONTAINER_ID>:/prefunded.txt
-```
-Access the container and import the accounts:
 
-```bash
+docker cp prefunded.txt <CONTAINER_ID>:/prefunded.txt
+
 docker exec -it <CONTAINER_ID> sh
 geth account import /prefunded.txt
-```
-  
-Move the account keystore to the expected location:
-  
-```bash
-
 cp /root/.ethereum/keystore/UTC--... /data/geth/execution-data/keystore
 ```
 
-4. Verify Accounts Are Loaded
+4. **Verify accounts:**
 
-Start Geth’s interactive console and confirm the accounts:
-  
 ```bash
 geth attach http://127.0.0.1:8545
 eth.accounts
 ```
 
-5. Configure Hardhat & MetaMask
+5. **Configure **``** and **``**:**
 
-In hardhat.config.js, update the RPC URL to match your Kurtosis node IP and port (typically 8545).
-
-In MetaMask, connect to the same local RPC and import the prefunded private key(s).
-
-Example Hardhat config:
-
-```bash  
-networks: {
-  localhost: {
-    url: "http://<HOST_IP>:8545",
-    accounts: [process.env.PRIVATE_KEY, process.env.PRIVATE_KEY2],
-  },
-},
+```env
+PRIVATE_KEY=<attacker key>
+PRIVATE_KEY2=<victim key>
+RPC_URL=http://127.0.0.1:<URL> #This URL will be shown on kurtosis deployment. Example: http://127.0.0.1:3343 -> 8545/rcp, there u will take 3343
+DEX_ADDRESS=0x... # To be filled after deployment only in scenario 1 when SimpleDex is deployed.
 ```
 
-6. Deploy & Test Contracts
+`hardhat.confing.js` is different for each scenario.
 
-You can deploy smart contracts using:
+6. **Install dependencies:**
 
-Remix IDE (connect it to your local RPC)
+```bash
+npm install --save-dev hardhat@^2.22.19 \
+  @nomicfoundation/hardhat-ethers@^3.0.8 ethers@^6.13.5 \
+  @openzeppelin/contracts@^5.2.0 \
+  @uniswap/v2-core@^1.0.1 \
+  @uniswap/v2-periphery@^1.1.0-beta.0 \
+  dotenv@^16.4.7
+```
+---
 
-Hardhat scripts
+## 🧪 Scenario 1: Fictitious DEX
 
-Blockscout to verify transactions and inspect contract state
+This scenario simulates a sandwich attack in a minimal custom DEX to focus on offensive logic.
 
-You can also run custom scripts (like attack simulations) via:
+### Project Structure
 
-npx hardhat run scripts/your-script.js --network localhost
+```
+.
+├── contracts/
+│   ├── SimpleDEX.sol
+├── scripts/
+│   ├── attack-bot.js
+│   ├── deploySimpleDEX.js
+│   ├── victim-buy.js
+├── package-lock.json
+├── package.json
+├── .env
+└── hardhat.config.js
+```
 
-## 📂 Project Structure
+### Step-by-Step Guide
 
-/contracts: Smart contracts used for simulating DEX and attack logic
+1. **Compile contracts:**
 
-/scripts: Scripts to deploy contracts and run simulations
+```bash
+npx hardhat compile
+```
 
-/kurtosis: Configuration files for setting up the Ethereum environment
+2. **Deploy the DEX contract:**
 
-.env: Store private keys and RPC details securely (not committed)
+```bash
+npx hardhat run scripts/deploy.js --network localhost
+```
 
-## 🔧 Built With
+3. **Update **``** with DEX address**
 
-Kurtosis - Test environment orchestrator
+4. **Deploy the Monitor contract:**
 
-Geth - Ethereum Execution Layer
+```bash
+npx hardhat run scripts/deploy-monitor.js --network localhost
+```
 
-Hardhat - Smart contract development environment
+5. **Run the attacker bot:**
 
-Uniswap - DEX contracts
+```bash
+node scripts/attack-bot.js --network localhost
+```
 
-Web3.py / ethers.js - Interaction libraries
+6. **Run the victim transaction:**
+
+```bash
+npx hardhat run scripts/victim-buy.js --network localhost
+```
+
+---
+
+## 🧪 Scenario 2: Uniswap Replica
+
+This scenario increases realism by replicating a full Uniswap DEX locally and testing the sandwich bot.
+
+### Project Structure
+
+```
+.
+├── contracts/
+│   ├── UMA.sol
+│   ├── UCO.sol
+│   ├── UniswapV2All.sol
+│   ├── UniswapV2All2.sol
+│   ├── WETH9.sol
+├── scripts/
+│   ├── DEPLOY.js
+│   ├── sandwich-bot.js
+│   ├── swap-victim.js
+├── package-lock.json
+├── package.json
+├── .env
+└── hardhat.config.js
+```
+
+### Step-by-Step Guide
+
+1. **Compile contracts:**
+
+```bash
+npx hardhat compile
+```
+
+2. **Deploy Uniswap contracts and add liquidity to the pool:**
+
+```bash
+npx hardhat run scripts/DEPLOY.js --network localhost
+```
+
+3. **Run the sandwich bot:**
+
+```bash
+node scripts/sandwich-bot.js --network localhost
+```
+
+4. **Execute the victim transaction (separately):**
+
+```bash
+node scripts/swap-victim.js --network localhost
+```
+
+5. **Review the results manually in logs or via contract state.**
+
+---
+
+## ⚖️ Legal & Ethical Considerations
+
+This project uses an offensive security (Red Team) approach for educational and research purposes only.
+
+Simulating MEV and front-running attacks in controlled environments helps developers and researchers understand vulnerabilities and build more secure systems. **Do not deploy or use these bots on public networks.**
+
+---
+
+## 🙏 Acknowledgements
+
+This project is based on the TFG of **José Manuel Rodríguez Chicano** (Universidad de Málaga, 2025) under the supervision of **Isaac Agudo Ruiz**.
+
+> "El objetivo principal ha consistido en conocer la lógica ofensiva que hay detrás de estos tipos de ataques para concienciar y mejorar las defensas del ecosistema DeFi."
+
+---
 
 
-
-## 🌐 Acknowledgements
-
-Based on the undergraduate thesis by José Manuel Rodríguez Chicano, Universidad de Málaga, 2025.
-
-Supervised by Isaac Agudo Ruiz.
