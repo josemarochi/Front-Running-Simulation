@@ -4,18 +4,18 @@ This repository replicates the Final Degree Project (TFG) titled "Concienciació
 
 ## 📚 Table of Contents
 
-- 📌 [Overview](#overview)
-- 🚀 [Technologies Used](#technologies-used)
-- ⚙️ [Environment Setup](#environment-setup)
-  - 🖥️ [Virtual Machine](#virtual-machine)
-  - 🐳 [Docker](#docker)
-  - 🟦 [NodeJS and NPM](#nodejs-and-npm)
-  - ⚙️ [Kurtosis](#kurtosis)
-  - 🔧 [Hardhat](#hardhat)
-- 🧪 [Scenario 1: Fictitious DEX](#scenario-1-fictitious-dex)
-- 🧪 [Scenario 2: Uniswap Replica](#scenario-2-uniswap-replica)
-- ⚖️ [Legal and Ethical Considerations](#legal-and-ethical-considerations)
-- 🙏 [Acknowledgements](#acknowledgements)
+- [📌 Overview](#overview)
+- [🚀 Technologies Used](#technologies-used)
+- [⚙️ Environment Setup](#environment-setup)
+  - [🖥️ Virtual Machine](#virtual-machine)
+  - [🐳 Docker](#docker)
+  - [🟦 NodeJS and NPM](#nodejs-and-npm)
+  - [⚙️ Kurtosis](#kurtosis)
+  - [🔧 Hardhat](#hardhat)
+- [🧪 Scenario 1: Fictitious DEX](#scenario-1-fictitious-dex)
+- [🧪 Scenario 2: Uniswap Replica](#scenario-2-uniswap-replica)
+- [⚖️ Legal and Ethical Considerations](#legal-and-ethical-considerations)
+- [🙏 Acknowledgements](#acknowledgements)
 
 ---
 
@@ -43,11 +43,11 @@ Two scenarios are implemented:
 
 Follow these steps to prepare your environment.
 
-### Virtual Machine
+### 🖥️ Virtual Machine
 
 All commands were tested on an Ubuntu 22.04.1 virtual machine with superuser privileges, using Oracle VirtualBox. You can also run these on a native Ubuntu installation or other Linux distributions with minimal changes.
 
-### Docker
+### 🐳 Docker
 
 Docker is required to run Geth and other services in containers.
 
@@ -64,7 +64,7 @@ docker --version
 # Expected output: Docker version 26.1.3, build 26.1.3-0ubuntu1~22.04.1
 ```
 
-### NodeJS and NPM
+### 🟦 NodeJS and NPM
 
 Node.js is a JavaScript runtime and NPM is its package manager.
 
@@ -82,7 +82,7 @@ node --version   # e.g. v20.19.0
 npm --version    # e.g. 10.8.2
 ```
 
-### Kurtosis
+### ⚙️ Kurtosis
 
 Kurtosis orchestrates your private Ethereum test network.
 
@@ -94,7 +94,7 @@ sudo apt update
 sudo apt install kurtosis-cli
 ```
 
-### Hardhat
+### 🔧 Hardhat
 
 Hardhat is used to compile, test, and deploy smart contracts.
 
